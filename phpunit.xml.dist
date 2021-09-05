@@ -31,6 +31,9 @@
         <include>
             <directory>src</directory>
         </include>
+        <exclude>
+            <file>src/Kernel.php</file>
+        </exclude>
         <report>
             <clover outputFile="public/reports/phpunit/coverage.xml"/>
             <html outputDirectory="public/reports/phpunit" lowUpperBound="85" highLowerBound="90"/>
