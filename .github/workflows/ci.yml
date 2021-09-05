@@ -9,18 +9,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        php-version: [ '7.4', '8.0' ]
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
-      #      - name: 'Setup PHP'
-      #        uses: shivammathur/setup-php@v2
-      #        with:
-      #          php-version: ${{ matrix.php }}
-      #          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached
-      #          tools: composer:v2
-      #          coverage: none
+      - name: 'Setup PHP'
+        uses: shivammathur/setup-php@2.7.0
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: 'none'
+          extensions: intl
+          tools: composer:v2
 
       - name: 'Set composer cache directory'
         id: composer-cache
@@ -30,8 +32,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
 
       - name: 'Validate composer.json and composer.lock'
         run: composer validate --strict
