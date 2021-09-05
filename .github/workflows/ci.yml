@@ -66,47 +66,57 @@ jobs:
 
   lint:
     name: 'Lint'
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
       - name: 'Lint YAML files'
+        continue-on-error: true
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console lint:yaml config --parse-tags
 
       - name: 'Lint Twig templates'
+        continue-on-error: true
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console lint:twig templates --env=prod
 
       - name: 'Lint XLIFF translations'
+        continue-on-error: true
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console lint:xliff translations
 
       - name: 'Lint Parameters and Services'
+        continue-on-error: true
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console lint:container --no-debug
 
       - name: 'Lint Doctrine entities'
+        continue-on-error: true
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 
   test:
     name: 'Test'
+    needs: build
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
       - name: 'Run PHPStan'
+        continue-on-error: true
         run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
 
       - name: 'Run Psalm'
+        continue-on-error: true
         run: psalm --output-format=github
 
       - name: 'Execute unit tests'
+        continue-on-error: true
         run: ./vendor/bin/phpunit --testdox --colors=always --teamcity test
 
       - name: 'Execute mutation tests'
+        continue-on-error: true
         run: ./vendor/bin/infection --coverage=public/reports/infection
