@@ -10,7 +10,7 @@ on:
 
 env:
   APP_ENV: 'test'
-  # APP_RELEASE: ${{ github.sha }}
+  APP_RELEASE: 'unknown'
   PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
@@ -23,19 +23,16 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
-      - name: 'Get the version'
+      - name: 'Get build version'
         id: version
         shell: bash
         run: |
-          # tag="$(git describe --tags "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
-          # tag="${tag/v/}"
-          # if [ -z "${tag}" ]; then
-          #   tag="0.0.0"
-          # fi
-          commit_id="$(git rev-parse --short HEAD)"
-          # echo ::set-output name=APP_RELEASE::"${tag}+${commit_id}"
-
-          echo ::set-output name=APP_RELEASE::${GITHUB_REF#refs/tags/}+${commit_id}
+          tag="$(git describe --tags "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
+          tag="${tag/v/}"
+          if [ -z "${tag}" ]; then
+            tag="0.0.0"
+          fi
+          echo "APP_RELEASE=${tag}-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: 'Setup PHP with Xdebug'
         id: setup-php
@@ -81,9 +78,6 @@ jobs:
           echo "::group::composer dump environment variables"
           composer dump-env ${{ env.APP_ENV }}
           echo "::endgroup::"
-        env:
-          APP_ENV: ${{ env.APP_ENV }}
-          APP_RELEASE:  ${{ steps.version.outputs.APP_RELEASE }}
 
       - name: 'Create Database'
         continue-on-error: true
