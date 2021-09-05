@@ -15,10 +15,9 @@ on:
 jobs:
   test:
     name: 'Testing'
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout code'
-        uses: actions/checkout@v2
 
       - name: 'Run PHPStan static analysis tool'
         continue-on-error: true
