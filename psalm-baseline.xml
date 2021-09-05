@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files
+  psalm-version="4.3.1@2feba22a005a18bf31d4c7b9bdb9252c73897476"
+  php-version="
+    php:8.0.10;
+    apcu:5.1.20;
+    bcmath:8.0.10;
+    bz2:8.0.10;
+    calendar:8.0.10;
+    Core:8.0.10;
+    ctype:8.0.10;
+    curl:8.0.10;
+    date:8.0.10;
+    dba:8.0.10;
+    dom:20031129;
+    exif:8.0.10;
+    FFI:8.0.10;
+    fileinfo:8.0.10;
+    filter:8.0.10;
+    ftp:8.0.10;
+    gd:8.0.10;
+    gettext:8.0.10;
+    gmp:8.0.10;
+    hash:8.0.10;
+    iconv:8.0.10;
+    intl:8.0.10;
+    json:8.0.10;
+    ldap:8.0.10;
+    libxml:8.0.10;
+    mbstring:8.0.10;
+    mysqli:8.0.10;
+    mysqlnd:mysqlnd 8.0.10;
+    odbc:8.0.10;
+    openssl:8.0.10;
+    pcntl:8.0.10;
+    pcre:8.0.10;
+    PDO:8.0.10;
+    pdo_dblib:8.0.10;
+    pdo_mysql:8.0.10;
+    PDO_ODBC:8.0.10;
+    pdo_pgsql:8.0.10;
+    pdo_sqlite:8.0.10;
+    pgsql:8.0.10;
+    Phar:8.0.10;
+    phpdbg_webhelper:8.0.10;
+    posix:8.0.10;
+    pspell:8.0.10;
+    readline:8.0.10;
+    redis:5.3.4;
+    Reflection:8.0.10;
+    session:8.0.10;
+    shmop:8.0.10;
+    SimpleXML:8.0.10;
+    soap:8.0.10;
+    sockets:8.0.10;
+    sodium:8.0.10;
+    SPL:8.0.10;
+    sqlite3:8.0.10;
+    standard:8.0.10;
+    sysvmsg:8.0.10;
+    sysvsem:8.0.10;
+    sysvshm:8.0.10;
+    tidy:8.0.10;
+    tokenizer:8.0.10;
+    xml:8.0.10;
+    xmlreader:8.0.10;
+    xmlwriter:8.0.10;
+    xsl:8.0.10;
+    Zend OPcache:8.0.10;
+    Zend OPcache:8.0.10;
+    zip:1.19.3;
+    zlib:8.0.10
+  "
+>
+  <file src="src/Command/AddUserCommand.php">
+    <MissingParamType occurrences="4">
+      <code>$email</code>
+      <code>$fullName</code>
+      <code>$plainPassword</code>
+      <code>$username</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="4">
+      <code>$entityManager</code>
+      <code>$passwordHasher</code>
+      <code>$users</code>
+      <code>$validator</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="7">
+      <code>$email</code>
+      <code>$email</code>
+      <code>$fullName</code>
+      <code>$hashedPassword</code>
+      <code>$password</code>
+      <code>$username</code>
+      <code>$username</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="14">
+      <code>$email</code>
+      <code>$email</code>
+      <code>$email</code>
+      <code>$fullName</code>
+      <code>$fullName</code>
+      <code>$fullName</code>
+      <code>$hashedPassword</code>
+      <code>$isAdmin</code>
+      <code>$password</code>
+      <code>$password</code>
+      <code>$plainPassword</code>
+      <code>$username</code>
+      <code>$username</code>
+      <code>$username</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="8">
+      <code>findOneBy</code>
+      <code>findOneBy</code>
+      <code>flush</code>
+      <code>hashPassword</code>
+      <code>persist</code>
+      <code>validateEmail</code>
+      <code>validateFullName</code>
+      <code>validatePassword</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="3">
+      <code>$email</code>
+      <code>$fullName</code>
+      <code>$username</code>
+    </MixedOperand>
+    <PossiblyNullArgument occurrences="2">
+      <code>$user-&gt;getEmail()</code>
+      <code>$user-&gt;getId()</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>$io</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Command/DeleteUserCommand.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>null === $user</code>
+    </DocblockTypeContradiction>
+    <MissingPropertyType occurrences="3">
+      <code>$entityManager</code>
+      <code>$users</code>
+      <code>$validator</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="1">
+      <code>$username</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="2">
+      <code>$username</code>
+      <code>$username</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="4">
+      <code>findOneByUsername</code>
+      <code>flush</code>
+      <code>remove</code>
+      <code>validateUsername</code>
+    </MixedMethodCall>
+    <PossiblyNullArgument occurrences="2">
+      <code>$user-&gt;getEmail()</code>
+      <code>$userId</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>$io</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Command/ListUsersCommand.php">
+    <MissingPropertyType occurrences="3">
+      <code>$emailSender</code>
+      <code>$mailer</code>
+      <code>$users</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="3">
+      <code>$allUsers</code>
+      <code>$email</code>
+      <code>$this-&gt;emailSender</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="3">
+      <code>$allUsers</code>
+      <code>$email</code>
+      <code>$maxResults</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="2">
+      <code>findBy</code>
+      <code>send</code>
+    </MixedMethodCall>
+  </file>
+  <file src="src/Controller/Admin/BlogController.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;getUser()</code>
+    </ArgumentTypeCoercion>
+    <InvalidScalarArgument occurrences="1">
+      <code>$request-&gt;request-&gt;get('token')</code>
+    </InvalidScalarArgument>
+    <PossiblyNullArgument occurrences="1">
+      <code>$this-&gt;getUser()</code>
+    </PossiblyNullArgument>
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>isClicked</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="src/Controller/BlogController.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;getUser()</code>
+    </ArgumentTypeCoercion>
+    <InvalidScalarArgument occurrences="2">
+      <code>$limit</code>
+      <code>$query</code>
+    </InvalidScalarArgument>
+    <MixedArgument occurrences="1">
+      <code>$tag</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$tag</code>
+    </MixedAssignment>
+    <PossiblyNullArgument occurrences="4">
+      <code>$post-&gt;getAuthor()-&gt;getFullName()</code>
+      <code>$post-&gt;getSummary()</code>
+      <code>$post-&gt;getTitle()</code>
+      <code>$this-&gt;getUser()</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>getFullName</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Controller/UserController.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$user</code>
+    </ArgumentTypeCoercion>
+    <MixedArgument occurrences="1">
+      <code>$form-&gt;get('newPassword')-&gt;getData()</code>
+    </MixedArgument>
+    <MixedMethodCall occurrences="1">
+      <code>setPassword</code>
+    </MixedMethodCall>
+    <PossiblyNullArgument occurrences="1">
+      <code>$user</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>setPassword</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Entity/Comment.php">
+    <PropertyNotSetInConstructor occurrences="4">
+      <code>$author</code>
+      <code>$content</code>
+      <code>$id</code>
+      <code>$post</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Entity/Post.php">
+    <PropertyNotSetInConstructor occurrences="6">
+      <code>$author</code>
+      <code>$content</code>
+      <code>$id</code>
+      <code>$slug</code>
+      <code>$summary</code>
+      <code>$title</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Entity/Tag.php">
+    <MissingConstructor occurrences="2">
+      <code>$id</code>
+      <code>$name</code>
+    </MissingConstructor>
+  </file>
+  <file src="src/Entity/User.php">
+    <MissingConstructor occurrences="5">
+      <code>$email</code>
+      <code>$fullName</code>
+      <code>$id</code>
+      <code>$password</code>
+      <code>$username</code>
+    </MissingConstructor>
+    <MixedReturnTypeCoercion occurrences="2">
+      <code>array</code>
+      <code>array_unique($roles)</code>
+    </MixedReturnTypeCoercion>
+  </file>
+  <file src="src/EventSubscriber/CheckRequirementsSubscriber.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>false</code>
+    </DocblockTypeContradiction>
+    <PossiblyNullReference occurrences="1">
+      <code>getName</code>
+    </PossiblyNullReference>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>$databasePlatform</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="src/EventSubscriber/CommentNotificationSubscriber.php">
+    <InvalidReturnStatement occurrences="1"/>
+    <InvalidReturnType occurrences="1">
+      <code>array{'App\\Event\\CommentCreatedEvent': string}</code>
+    </InvalidReturnType>
+    <PossiblyNullArgument occurrences="1">
+      <code>$post-&gt;getAuthor()-&gt;getEmail()</code>
+    </PossiblyNullArgument>
+    <PossiblyNullOperand occurrences="1">
+      <code>$comment-&gt;getId()</code>
+    </PossiblyNullOperand>
+    <PossiblyNullReference occurrences="2">
+      <code>getEmail</code>
+      <code>getSlug</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/EventSubscriber/RedirectToPreferredLocaleSubscriber.php">
+    <MissingPropertyType occurrences="3">
+      <code>$defaultLocale</code>
+      <code>$locales</code>
+      <code>$urlGenerator</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="2">
+      <code>$this-&gt;locales</code>
+      <code>$this-&gt;urlGenerator-&gt;generate('homepage', ['_locale' =&gt; $preferredLanguage])</code>
+    </MixedArgument>
+    <MixedMethodCall occurrences="1">
+      <code>generate</code>
+    </MixedMethodCall>
+    <TypeDoesNotContainType occurrences="1">
+      <code>empty($this-&gt;locales)</code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="src/Form/DataTransformer/TagArrayToStringTransformer.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>u($string)-&gt;split(',')</code>
+    </ImplicitToStringCast>
+    <MixedArgument occurrences="3">
+      <code>$string</code>
+      <code>$string</code>
+      <code>$tags</code>
+    </MixedArgument>
+  </file>
+  <file src="src/Form/PostType.php">
+    <MissingPropertyType occurrences="1">
+      <code>$slugger</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="1">
+      <code>$this-&gt;slugger-&gt;slug($postTitle)-&gt;lower()</code>
+    </MixedArgument>
+    <MixedMethodCall occurrences="2">
+      <code>lower</code>
+      <code>slug</code>
+    </MixedMethodCall>
+  </file>
+  <file src="src/Form/Type/DateTimePickerType.php">
+    <MissingPropertyType occurrences="1">
+      <code>$formatConverter</code>
+    </MissingPropertyType>
+    <MixedArrayAccess occurrences="1">
+      <code>$view-&gt;vars['attr']</code>
+    </MixedArrayAccess>
+    <MixedArrayAssignment occurrences="2">
+      <code>$view-&gt;vars['attr']</code>
+      <code>$view-&gt;vars['attr']</code>
+    </MixedArrayAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>convert</code>
+    </MixedMethodCall>
+  </file>
+  <file src="src/Form/Type/TagsInputType.php">
+    <MissingPropertyType occurrences="1">
+      <code>$tags</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="1">
+      <code>$this-&gt;tags</code>
+    </MixedArgument>
+    <MixedArrayAssignment occurrences="1">
+      <code>$view-&gt;vars['tags']</code>
+    </MixedArrayAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>findAll</code>
+    </MixedMethodCall>
+  </file>
+  <file src="src/Pagination/Paginator.php">
+    <MissingPropertyType occurrences="3">
+      <code>$currentPage</code>
+      <code>$numResults</code>
+      <code>$results</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="3">
+      <code>$this-&gt;numResults / $this-&gt;pageSize</code>
+      <code>$this-&gt;queryBuilder-&gt;getDQLPart('having') ?: []</code>
+      <code>$this-&gt;queryBuilder-&gt;getDQLPart('join')</code>
+    </MixedArgument>
+    <MixedOperand occurrences="1">
+      <code>$this-&gt;numResults</code>
+    </MixedOperand>
+  </file>
+  <file src="src/Repository/PostRepository.php">
+    <MixedInferredReturnType occurrences="1">
+      <code>Post[]</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1"/>
+    <TooManyArguments occurrences="1">
+      <code>addSelect</code>
+    </TooManyArguments>
+  </file>
+  <file src="src/Security/PostVoter.php">
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$subject</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="src/Twig/AppExtension.php">
+    <MissingPropertyType occurrences="2">
+      <code>$localeCodes</code>
+      <code>$locales</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="2">
+      <code>$localeCode</code>
+      <code>$localeCode</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$localeCode</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>array</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$this-&gt;locales</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Twig/SourceCodeExtension.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$callable</code>
+    </ArgumentTypeCoercion>
+    <ImplicitToStringCast occurrences="4">
+      <code>$lineOfCode</code>
+      <code>$lineOfCode</code>
+      <code>$lineOfCode</code>
+      <code>string</code>
+    </ImplicitToStringCast>
+    <MissingPropertyType occurrences="1">
+      <code>$controller</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="1">
+      <code>$this-&gt;controller</code>
+    </MixedArgument>
+  </file>
+</files>
