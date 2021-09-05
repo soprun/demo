@@ -9,8 +9,6 @@ parameters:
     app_locales: ar|en|fr|de|es|cs|nl|ru|uk|ro|pt_BR|pl|it|ja|id|ca|sl|hr|zh_CN|bg|tr|lt|bs|sr_Cyrl|sr_Latn
     app.notifications.email_sender: anonymous@example.com
 
-    env(APP_RELEASE): 'unknown' # version+build: 2.3.12+1234
-
 services:
     # default configuration for services in *this* file
     _defaults:
