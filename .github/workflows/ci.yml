@@ -94,10 +94,34 @@ jobs:
         continue-on-error: true
         run: ./vendor/bin/infection --coverage=public/reports/infection
 
-#      - name: 'Uploading an archive production artifacts'
-#        uses: actions/upload-artifact@v2
-#        with:
-#          retention-days: 2
-#          name: build-dist
-#          path: |
-#            public/reports/**
+      #      - name: 'Uploading an archive production artifacts'
+      #        uses: actions/upload-artifact@v2
+      #        with:
+      #          retention-days: 2
+      #          name: build-dist
+      #          path: |
+      #            public/reports/**
+
+      - name: Psalm – Security Scanner for PHP
+        # You may pin to the exact commit or the version.
+        # uses: psalm/psalm-github-security-scan@f3e6fd9432bc3e44aec078572677ce9d2ef9c287
+        uses: psalm/psalm-github-security-scan@1.2.1
+        with:
+          # File for Psalm’s output
+          report_file: results.sarif # optional, default is results.sarif
+
+
+      - name: Psalm – Static Analysis for PHP
+        # You may pin to the exact commit or the version.
+        # uses: psalm/psalm-github-actions@2e545d38ff4387b370449e2673088cc8dc40cf1d
+        uses: psalm/psalm-github-actions@1.1.2
+        continue-on-error: true
+        with:
+          # Whether or not to use Psalm’s security analysis
+          # security_analysis: # optional
+          # File for Psalm’s output
+          report_file: results.sarif # optional, default is
+          # Whether or not Composer installs dev packages
+          # composer_require_dev: # optional
+          # Whether or not the --ignore-platform-reqs flag is passed to Composer
+          # composer_ignore_platform_reqs: # optional
