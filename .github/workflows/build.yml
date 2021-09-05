@@ -10,7 +10,7 @@ on:
 
 env:
   APP_ENV: 'test'
-  APP_RELEASE: ${{ github.head_ref }}
+  APP_RELEASE: ${{ github.ref }}
   PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
