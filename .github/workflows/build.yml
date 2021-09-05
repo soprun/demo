@@ -27,7 +27,6 @@ jobs:
         id: version
         shell: bash
         run: |
-          echo "::group::Get build version"
           set +e
           tag="$(git describe --tags "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
           tag="${tag/v/}"
@@ -36,14 +35,19 @@ jobs:
           fi
           release="${tag}-$(git rev-parse --short HEAD)"
           set -e
+
           echo "APP_RELEASE=${release}" >> $GITHUB_ENV
-          echo "::endgroup::"
+          echo "::warning::APP_ENV=${release}"
+
+      - name: '.env.local'
+        shell: bash
+        run: |
+          echo "::debug::APP_ENV=${APP_ENV}"
+          echo "::debug::APP_RELEASE=${APP_RELEASE}"
 
           # set application environment
-          echo "::group::Create .env.local"
           echo "APP_ENV=${APP_ENV}" >> .env.local
-          echo "APP_RELEASE=${release}" >> .env.local
-          echo "::endgroup::"
+          echo "APP_RELEASE=${APP_RELEASE}" >> .env.local
 
       - name: 'Setup PHP with Xdebug'
         id: setup-php
