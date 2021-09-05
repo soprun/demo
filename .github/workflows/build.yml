@@ -32,10 +32,10 @@ jobs:
           # if [ -z "${tag}" ]; then
           #   tag="0.0.0"
           # fi
-          # commit_id="$(git rev-parse --short HEAD)"
+          commit_id="$(git rev-parse --short HEAD)"
           # echo ::set-output name=APP_RELEASE::"${tag}+${commit_id}"
 
-          echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+          echo ::set-output name=APP_RELEASE::${GITHUB_REF#refs/tags/}+${commit_id}
 
       - name: 'Setup PHP with Xdebug'
         id: setup-php
@@ -83,7 +83,7 @@ jobs:
           echo "::endgroup::"
         env:
           APP_ENV: ${{ env.APP_ENV }}
-          APP_RELEASE:  ${{ steps.version.outputs.VERSION }}
+          APP_RELEASE:  ${{ steps.version.outputs.APP_RELEASE }}
 
       - name: 'Create Database'
         continue-on-error: true
