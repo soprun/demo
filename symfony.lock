@@ -1,6 +1,15 @@
 {
+    "amphp/amp": {
+        "version": "v2.6.0"
+    },
+    "amphp/byte-stream": {
+        "version": "v1.8.1"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.2"
+    },
+    "composer/semver": {
+        "version": "3.2.5"
     },
     "composer/xdebug-handler": {
         "version": "1.4.6"
@@ -16,6 +25,9 @@
         "files": [
             "config/packages/test/dama_doctrine_test_bundle.yaml"
         ]
+    },
+    "dnoegel/php-xdg-base-dir": {
+        "version": "v0.1.1"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -118,6 +130,12 @@
     "erusev/parsedown": {
         "version": "1.7.4"
     },
+    "felixfbecker/advanced-json-rpc": {
+        "version": "v3.2.1"
+    },
+    "felixfbecker/language-server-protocol": {
+        "version": "1.5.1"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
@@ -157,11 +175,17 @@
     "myclabs/deep-copy": {
         "version": "1.10.2"
     },
+    "netresearch/jsonmapper": {
+        "version": "v4.0.0"
+    },
     "nikic/php-parser": {
         "version": "v4.10.5"
     },
     "ondram/ci-detector": {
         "version": "3.5.1"
+    },
+    "openlss/lib-array2xml": {
+        "version": "1.0.0"
     },
     "phar-io/manifest": {
         "version": "2.0.3"
@@ -224,6 +248,9 @@
     },
     "psr/log": {
         "version": "1.1.4"
+    },
+    "roave/security-advisories": {
+        "version": "dev-latest"
     },
     "sanmai/pipeline": {
         "version": "v5.1.0"
@@ -699,6 +726,9 @@
     },
     "twig/twig": {
         "version": "v3.3.2"
+    },
+    "vimeo/psalm": {
+        "version": "4.10.0"
     },
     "webmozart/assert": {
         "version": "1.10.0"

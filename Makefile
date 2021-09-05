@@ -1,5 +1,16 @@
 SHELL := /bin/bash
 
+-include .env
+-include .env.local
+
+ifndef APP_ENV
+$(error The env:APP_ENV variable is missing.)
+endif
+
+ifeq ($(filter $(APP_ENV),test dev prod),)
+$(error The env:APP_ENV variable is invalid.)
+endif
+
 # Self-Documented Makefile see https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .DEFAULT_GOAL := help
 
@@ -25,6 +36,11 @@ DATE := $(shell date --utc --date="$(GIT_DATE)" +%Y%m%d%H%M)
 CPUS := $(shell nproc)
 endif
 
+# exec: ln -sf ./.env.dist ./.env
+#ifeq ($(shell ! test -f "$(PROJECT_DIR)/psalm-baseline.xml" && echo -n yes),yes)
+#$(info psalm-baseline.xml is not exist!)
+#$(shell psalm --set-baseline=psalm-baseline.xml)
+#endif
 
 .PHONY: help
 help:
@@ -62,7 +78,42 @@ static-analysis: ## static-analysis
 phpunit: ## unit-tests
 	@php -dxdebug.mode=coverage ./vendor/bin/phpunit \
 		--testdox \
-		--colors=always
+		--colors=always \
+		--verbose
+
+psalm: ## psalm
+	@export PSALM_ALLOW_XDEBUG=1; php -dxdebug.mode=develop,trace ./vendor/bin/psalm \
+		--threads=$(CPUS) \
+		--taint-analysis \
+		--output-format=phpstorm \
+		--stats \
+		--debug-by-line \
+		--debug-emitted-issues \
+		--report=public/reports/psalm.console
+
+psalm-baseline:
+	psalm --update-baseline --include-php-versions
+
+psalm-set-baseline:
+	psalm --set-baseline=psalm-baseline.xml
+
+# see: https://psalm.dev/docs/manipulating_code/fixing/
+psalter: ## Fixing Code
+	psalter \
+		--threads=$(CPUS)\
+		--php-version=8.0.10 \
+		--issues=all \
+		--safe-types \
+		--allow-backwards-incompatible-changes=false
+
+cs:
+	vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff
+
+cs-dry-run:
+	vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
+
+cs-fix:
+	vendor/bin/php-cs-fixer fix
 
 INFECTION_RUN := \
 	./vendor/bin/infection \
@@ -73,7 +124,8 @@ INFECTION_RUN := \
 		--formatter=progress \
 		--skip-initial-tests \
 		--ansi \
-		--debug
+		--debug \
+		--min-msi=70
 
 CHANGED_FILES := $(shell git diff origin/main --diff-filter=AM --name-only | grep src/ | paste -sd "," -)
 
@@ -109,3 +161,28 @@ composer-check:
 
 deprecations:
 	php bin/console debug:container --deprecations
+
+phpdocumentor: ## phpDocumentor
+	@phpdocumentor \
+		--sourcecode \
+		--validate \
+		--parseprivate
+
+
+clean: clear-cache
+	docker-compose down
+	sudo rm -rf vendor
+	make clear-cache
+
+fix-permissions:
+	sudo chown -Rf $(shell id -u):$(shell id -g) .
+	sudo chown -Rf $(shell id -u):$(shell id -g) ~/.cache/composer
+
+fix-cache-permissions-dev:
+	sudo chmod -Rf 777 $(PROJECT_DIR)/var/*
+
+clear-cache:
+	$(PHP_RUN) rm $(PROJECT_DIR)/var/* -rf
+
+composer-cache-dir:
+	@composer config cache-files-dir
