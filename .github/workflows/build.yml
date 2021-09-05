@@ -10,7 +10,8 @@ on:
 
 env:
   APP_ENV: 'test'
-  PHP_VERSION: 8.0
+  APP_RELEASE: ${{ github.head_ref }}
+  PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
 
@@ -29,7 +30,7 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
-      - name: 'Setup PHP'
+      - name: 'Setup PHP with Xdebug'
         id: setup-php
         uses: shivammathur/setup-php@2.7.0
         with:
@@ -37,14 +38,18 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           tools: ${{ env.PHP_TOOLS }}
-        env:
-          update: true
 
       - name: 'Check PHP Version'
         run: php -v
 
-      - name: 'Print PHP version'
-        run: echo ${{ steps.setup-php.outputs.php-version }}
+      - name: 'Install Symfony CLI'
+        run: |
+          echo "::group::installer symfony cli"
+          wget https://get.symfony.com/cli/installer -O - | bash
+          echo "::endgroup::"
+          echo "::group::Check if any dependencies are compromised"
+          /home/runner/.symfony/bin/symfony check:security
+          echo "::endgroup::"
 
       - name: 'Get composer cache directory'
         id: composer-cache
@@ -57,27 +62,21 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
 
-      - name: 'Install Symfony CLI'
-        run: |
-          echo "::group::installer symfony cli"
-          wget https://get.symfony.com/cli/installer -O - | bash
-          echo "::endgroup::"
-          echo "::group::Check if any dependencies are compromised"
-          /home/runner/.symfony/bin/symfony check:security
-          echo "::endgroup::"
-
-      - name: 'Install Composer dependencies'
+      - name: 'Install dependencies'
         id: install
         run: |
           echo "::group::composer validate"
           composer validate --strict
           echo "::endgroup::"
           echo "::group::composer install"
-          composer install --prefer-dist --no-interaction --no-progress
+          composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
           echo "::endgroup::"
           echo "::group::composer dump environment variables"
           composer dump-env ${{ env.APP_ENV }}
           echo "::endgroup::"
+        env:
+          APP_ENV: ${{ env.APP_ENV }}
+          APP_RELEASE: ${{ env.APP_RELEASE }}
 
       - name: 'Create Database'
         continue-on-error: true
@@ -121,7 +120,7 @@ jobs:
 
       - name: 'Run PHPStan static analysis tool'
         continue-on-error: true
-        run: php ./vendor/bin/phpstan analyse ./src --memory-limit=-1 --threads=4 --error-format=checkstyle | cs2pr
+        run: php ./vendor/bin/phpstan analyse ./src --memory-limit=-1 --error-format=checkstyle | cs2pr
 
       #      - name: 'Run Psalm'
       #        continue-on-error: true
