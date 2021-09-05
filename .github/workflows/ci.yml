@@ -1,6 +1,8 @@
 name: 'Continuous integration'
 
 on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
   push:
     branches: [ main ]
   pull_request:
@@ -8,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build ${{ matrix.php-version }}
+    name: 'Build php-${{ matrix.php-version }}'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -72,6 +74,8 @@ jobs:
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: 'Lint YAML files'
         continue-on-error: true
@@ -103,8 +107,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout code'
-        uses: actions/checkout@v2
+#      - name: 'Checkout code'
+#        uses: actions/checkout@v2
 
       - name: 'Run PHPStan'
         continue-on-error: true
