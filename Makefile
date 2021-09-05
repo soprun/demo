@@ -99,15 +99,6 @@ psalter: ## Fixing Code
 		--php-version=8.0.10 \
 		--issues=all
 
-cs:
-	vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff
-
-cs-dry-run:
-	vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
-
-cs-fix:
-	vendor/bin/php-cs-fixer fix
-
 INFECTION_RUN := \
 	./vendor/bin/infection \
 		--test-framework=phpunit \
@@ -161,7 +152,6 @@ phpdocumentor: ## phpDocumentor
 		--validate \
 		--parseprivate
 
-
 clean: clear-cache
 	docker-compose down
 	sudo rm -rf vendor
@@ -175,7 +165,7 @@ fix-cache-permissions-dev:
 	sudo chmod -Rf 777 $(PROJECT_DIR)/var/*
 
 clear-cache:
-	$(PHP_RUN) rm $(PROJECT_DIR)/var/* -rf
+	rm $(PROJECT_DIR)/var/* -rf
 
 composer-cache-dir:
 	@composer config cache-files-dir
