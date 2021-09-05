@@ -67,11 +67,6 @@ jobs:
             public/reports/**
             .env.local.php
 
-  lint:
-    name: 'Lint'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: 'Lint YAML files'
         continue-on-error: true
         if: always() && steps.install.outcome == 'success'
@@ -97,11 +92,6 @@ jobs:
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 
-  test:
-    name: 'Testing'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: 'Run PHPStan static analysis tool'
         continue-on-error: true
         run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
