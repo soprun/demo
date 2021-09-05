@@ -1,4 +1,4 @@
-name: 'Build'
+name: 'PHP CI'
 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -16,8 +16,8 @@ env:
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
 
 jobs:
-  build:
-    name: 'Building'
+  prepare:
+    name: 'Preparing'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
@@ -36,7 +36,15 @@ jobs:
           echo "APP_RELEASE=${release}" >> $GITHUB_ENV
           echo "::debug::release=${release}"
 
-      - name: 'Get application environment'
+  build:
+    name: 'Building'
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
+
+      - name: 'Setup application environment'
         shell: bash
         run: |
           # Application environment
@@ -124,28 +132,62 @@ jobs:
 
   build-assets:
     name: 'Building assets'
-    needs: build
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - name: 'Cache node_modules'
-        uses: actions/cache@v2
-        id: yarn-cache-node-modules
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
+
+      - name: 'Setup node.js'
+        uses: actions/setup-node@v2
+        env:
+          NODE_ENV: development
         with:
-          path: node_modules
-          key: ${{ runner.os }}-yarn-cache-node-modules-${{ hashFiles('**/yarn.lock') }}
+          node-version: '14'
+          check-latest: true
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: 'Get config cache directory'
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: 'Setup npm cache node_modules'
+        uses: actions/cache@v2
+        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-cache-node-modules-
+            ${{ runner.os }}-node-
 
-      - name: 'Yarn install'
-        if: steps.yarn-cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install
+      - name: 'Install dependencies'
+        run: npm ci --ignore-scripts
 
-      - name: 'Yarn build'
-        run: yarn run encore production
+      - name: 'Run lint'
+        continue-on-error: true
+        run: npm run lint
 
-      - name: 'Archive production artifacts'
+      - name: 'Run test'
+        continue-on-error: true
+        run: npm run test
+
+      - name: 'Run audit'
+        continue-on-error: true
+        run: npm audit --production
+
+      - name: 'Run npm-check'
+        continue-on-error: true
+        run: npm run npm-check
+
+      - name: 'Run build in production mode'
+        run: npm run build --if-present
+
+      - name: 'Uploading an archive production artifacts'
         uses: actions/upload-artifact@v2
         with:
           retention-days: 2
-          name: build
-          path: public/build
+          name: build-dist
+          path: |
+            public/build
