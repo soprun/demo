@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ '7.4', '8.0' ]
+        php-version: [ '8.0' ]
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
@@ -42,9 +42,34 @@ jobs:
       - name: 'Validate composer.json and composer.lock'
         run: composer validate --strict
 
+      - name: 'Download Symfony CLI'
+        run: wget https://get.symfony.com/cli/installer -O - | bash
+
+      - name: 'Check if any dependencies are compromised'
+        run: /home/runner/.symfony/bin/symfony check:security
+
       - name: 'Install dependencies'
         id: install
-        run: composer install --prefer-dist --no-interaction
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: 'Compiles .env files to .env.local.php.'
+        run: composer symfony:dump-env prod
+
+      - name: 'Uploading an archive production artifacts'
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 2
+          name: build-dist
+          path: |
+            public/reports/**
+            .env.local.php
+
+  lint:
+    name: 'Lint'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
 
       - name: 'Lint YAML files'
         if: always() && steps.install.outcome == 'success'
@@ -66,62 +91,22 @@ jobs:
         if: always() && steps.install.outcome == 'success'
         run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 
-      - name: 'Download Symfony CLI'
-        if: always() && steps.install.outcome == 'success'
-        run: wget https://get.symfony.com/cli/installer -O - | bash
-
-      - name: 'Check if any dependencies are compromised'
-        if: always() && steps.install.outcome == 'success'
-        run: /home/runner/.symfony/bin/symfony check:security
+  test:
+    name: 'Test'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
 
       - name: 'Run PHPStan'
-        if: always() && steps.install.outcome == 'success'
-        continue-on-error: true
         run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
 
       - name: 'Run Psalm'
-        if: always() && steps.install.outcome == 'success'
-        continue-on-error: true
         run: psalm --output-format=github
 
       - name: 'Execute unit tests'
-        if: always() && steps.install.outcome == 'success'
-        continue-on-error: true
         run: ./vendor/bin/phpunit --testdox --colors=always --teamcity test
 
       - name: 'Execute mutation tests'
-        if: always() && steps.install.outcome == 'success'
-        continue-on-error: true
         run: ./vendor/bin/infection --coverage=public/reports/infection
-
-      #      - name: 'Uploading an archive production artifacts'
-      #        uses: actions/upload-artifact@v2
-      #        with:
-      #          retention-days: 2
-      #          name: build-dist
-      #          path: |
-      #            public/reports/**
-
-      - name: Psalm – Security Scanner for PHP
-        # You may pin to the exact commit or the version.
-        # uses: psalm/psalm-github-security-scan@f3e6fd9432bc3e44aec078572677ce9d2ef9c287
-        uses: psalm/psalm-github-security-scan@1.2.1
-        with:
-          # File for Psalm’s output
-          report_file: results.sarif # optional, default is results.sarif
-
-
-      - name: Psalm – Static Analysis for PHP
-        # You may pin to the exact commit or the version.
-        # uses: psalm/psalm-github-actions@2e545d38ff4387b370449e2673088cc8dc40cf1d
-        uses: psalm/psalm-github-actions@1.1.2
-        continue-on-error: true
-        with:
-          # Whether or not to use Psalm’s security analysis
-          # security_analysis: # optional
-          # File for Psalm’s output
-          report_file: results.sarif # optional, default is
-          # Whether or not Composer installs dev packages
-          # composer_require_dev: # optional
-          # Whether or not the --ignore-platform-reqs flag is passed to Composer
-          # composer_ignore_platform_reqs: # optional
