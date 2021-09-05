@@ -10,11 +10,11 @@ on:
 
 jobs:
   build:
-    name: 'Build php-${{ matrix.php-version }}'
+    name: 'Build php-8.0'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: [ '8.0' ]
+    #    strategy:
+    #      matrix:
+    #        php-version: [ '8.0' ]
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
@@ -70,40 +70,40 @@ jobs:
       - name: 'Lint YAML files'
         continue-on-error: true
         if: always() && steps.install.outcome == 'success'
-        run: ./bin/console lint:yaml config --parse-tags
+        run: php ./bin/console lint:yaml config --parse-tags
 
       - name: 'Lint Twig templates'
         continue-on-error: true
         if: always() && steps.install.outcome == 'success'
-        run: ./bin/console lint:twig templates --env=prod
+        run: php ./bin/console lint:twig templates --env=prod
 
       - name: 'Lint XLIFF translations'
         continue-on-error: true
         if: always() && steps.install.outcome == 'success'
-        run: ./bin/console lint:xliff translations
+        run: php ./bin/console lint:xliff translations
 
       - name: 'Lint Parameters and Services'
         continue-on-error: true
         if: always() && steps.install.outcome == 'success'
-        run: ./bin/console lint:container --no-debug
+        run: php ./bin/console lint:container --no-debug
 
       - name: 'Lint Doctrine entities'
         continue-on-error: true
         if: always() && steps.install.outcome == 'success'
-        run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+        run: php ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 
       - name: 'Run PHPStan static analysis tool'
         continue-on-error: true
         run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
 
-      - name: 'Run Psalm'
-        continue-on-error: true
-        run: psalm --output-format=github
+      #      - name: 'Run Psalm'
+      #        continue-on-error: true
+      #        run: psalm --output-format=github
 
       - name: 'Run PHPUnit testing'
         continue-on-error: true
-        run: ./vendor/bin/phpunit --testdox --colors=always
+        run: php ./bin/phpunit --testdox --colors=always
 
       - name: 'Run mutation testing '
         continue-on-error: true
-        run: ./vendor/bin/infection --coverage=public/reports/infection
+        run: php ./vendor/bin/infection --coverage=public/reports/infection
