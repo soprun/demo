@@ -10,7 +10,7 @@ on:
 
 env:
   APP_ENV: 'test'
-  APP_RELEASE: ${{ github.ref }}
+  # APP_RELEASE: ${{ github.sha }}
   PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
@@ -27,8 +27,15 @@ jobs:
           fetch-depth: '0'
 
       - name: 'Get the version'
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        shell: bash
+        run: |
+          tag="$(git describe --tags "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
+          tag="${tag/v/}"
+          if [ -z "${tag}" ]; then
+            tag="0.0.0"
+          fi
+          commit_id="$(git rev-parse --short HEAD)"
+          echo ::set-output name=APP_RELEASE::"${tag}+${commit_id}"
 
       - name: 'Setup PHP with Xdebug'
         id: setup-php
