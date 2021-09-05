@@ -84,12 +84,7 @@ phpunit: ## unit-tests
 psalm: ## psalm
 	@export PSALM_ALLOW_XDEBUG=1; php -dxdebug.mode=develop,trace ./vendor/bin/psalm \
 		--threads=$(CPUS) \
-		--taint-analysis \
-		--output-format=phpstorm \
-		--stats \
-		--debug-by-line \
-		--debug-emitted-issues \
-		--report=public/reports/psalm.console
+		--taint-analysis
 
 psalm-baseline:
 	psalm --update-baseline --include-php-versions
@@ -102,9 +97,7 @@ psalter: ## Fixing Code
 	psalter \
 		--threads=$(CPUS)\
 		--php-version=8.0.10 \
-		--issues=all \
-		--safe-types \
-		--allow-backwards-incompatible-changes=false
+		--issues=all
 
 cs:
 	vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff

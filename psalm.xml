@@ -2,7 +2,6 @@
 <psalm
     errorLevel="4"
     reportMixedIssues="false"
-    resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -11,11 +10,11 @@
     errorBaseline="psalm-baseline.xml"
 >
     <projectFiles>
-        <directory name="src" />
+        <directory name="./src" />
         <ignoreFiles>
-            <file name="src/Kernel.php"/>
-            <directory name="src/DataFixtures" />
-            <directory name="vendor" />
+            <file name="./src/Kernel.php"/>
+            <directory name="./src/DataFixtures" />
+            <directory name="./vendor" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
