@@ -9,6 +9,7 @@
          colors="true"
          verbose="true"
          stopOnFailure="true"
+         cacheResult="false"
 >
     <php>
         <ini name="display_errors" value="1" />
