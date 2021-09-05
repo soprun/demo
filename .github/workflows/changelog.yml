@@ -1,14 +1,9 @@
 name: 'Create Release'
 
-#on:
-#  milestone:
-#    types:
-#      - closed
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  milestone:
+    types:
+      - closed
 
 jobs:
   changelog:
