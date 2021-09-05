@@ -1,0 +1,40 @@
+name: 'Lint'
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint:
+    name: 'Lint'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
+
+      - name: 'Lint YAML files'
+        continue-on-error: true
+        if: always() && steps.install.outcome == 'success'
+        run: php ./bin/console lint:yaml config --parse-tags
+
+      - name: 'Lint Twig templates'
+        continue-on-error: true
+        if: always() && steps.install.outcome == 'success'
+        run: php ./bin/console lint:twig templates --env=prod
+
+      - name: 'Lint XLIFF translations'
+        continue-on-error: true
+        if: always() && steps.install.outcome == 'success'
+        run: php ./bin/console lint:xliff translations
+
+      - name: 'Lint Parameters and Services'
+        continue-on-error: true
+        if: always() && steps.install.outcome == 'success'
+        run: php ./bin/console lint:container --no-debug
+
+      - name: 'Lint Doctrine entities'
+        continue-on-error: true
+        if: always() && steps.install.outcome == 'success'
+        run: php ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction

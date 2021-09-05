@@ -1,0 +1,39 @@
+name: 'test'
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: 'Test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
+
+      - name: 'Run PHPStan static analysis tool'
+        continue-on-error: true
+        run: php ./vendor/bin/phpstan analyse ./src --memory-limit=-1 --error-format=checkstyle | cs2pr
+
+      #      - name: 'Run Psalm'
+      #        continue-on-error: true
+      #        run: psalm --output-format=github
+
+      - name: 'Run PHPUnit testing'
+        continue-on-error: true
+        run: php ./bin/phpunit --testdox --colors=always
+
+      - name: 'Run mutation testing '
+        continue-on-error: true
+        run: php ./vendor/bin/infection --coverage=public/reports/infection
+
+      - name: 'Artifact: build reports'
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 2
+          name: build-reports
+          path: |
+            ./public/reports/*
