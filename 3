@@ -1,3 +1,6 @@
-#!$SHEBANG$
+#!/bin/bash
 
-$END$
+CHANGED_FILES=$(git diff origin/master --diff-filter=AM --name-only | grep src/ | paste -sd "," -);
+INFECTION_FILTER="--filter=${CHANGED_FILES} --ignore-msi-with-no-mutations";
+
+echo "infection --threads=4 $INFECTION_FILTER"
