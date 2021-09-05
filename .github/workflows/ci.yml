@@ -1,0 +1,89 @@
+name: 'Continuous integration'
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v2
+
+      #      - name: 'Setup PHP'
+      #        uses: shivammathur/setup-php@v2
+      #        with:
+      #          php-version: ${{ matrix.php }}
+      #          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached
+      #          tools: composer:v2
+      #          coverage: none
+
+      - name: 'Set composer cache directory'
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: 'Cache Composer packages'
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: 'Validate composer.json and composer.lock'
+        run: composer validate --strict
+
+      - name: 'Install dependencies'
+        run: composer install --prefer-dist --no-interaction
+
+      - name: 'Lint YAML files'
+        if: always() && steps.install.outcome == 'success'
+        run: ./bin/console lint:yaml config --parse-tags
+
+      - name: 'Lint Twig templates'
+        if: always() && steps.install.outcome == 'success'
+        run: ./bin/console lint:twig templates --env=prod
+
+      - name: 'Lint XLIFF translations'
+        if: always() && steps.install.outcome == 'success'
+        run: ./bin/console lint:xliff translations
+
+      - name: 'Lint Parameters and Services'
+        if: always() && steps.install.outcome == 'success'
+        run: ./bin/console lint:container --no-debug
+
+      - name: 'Lint Doctrine entities'
+        if: always() && steps.install.outcome == 'success'
+        run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+
+      - name: 'Lint Composer config'
+        if: always() && steps.install.outcome == 'success'
+        run: composer validate --strict
+
+      - name: 'Download Symfony CLI'
+        if: always() && steps.install.outcome == 'success'
+        run: wget https://get.symfony.com/cli/installer -O - | bash
+
+      - name: 'Check if any dependencies are compromised'
+        if: always() && steps.install.outcome == 'success'
+        run: /home/runner/.symfony/bin/symfony check:security
+
+      - name: 'Execute static analysis'
+        continue-on-error: true
+        run: php ./vendor/bin/phpstan analyse
+
+      - name: 'Execute unit tests'
+        continue-on-error: true
+        run: php -dxdebug.mode=coverage ./vendor/bin/phpunit --testdox --colors=always
+
+
+#      - name: 'Uploading an archive production artifacts'
+#        uses: actions/upload-artifact@v2
+#        with:
+#          retention-days: 2
+#          name: build-dist
+#          path: |
+#            public/reports/**
