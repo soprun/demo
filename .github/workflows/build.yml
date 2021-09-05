@@ -80,7 +80,7 @@ jobs:
         run: |
           composer validate --strict
           composer install --prefer-dist --no-interaction --optimize-autoloader --quiet
-          composer dump-env ${{ env.APP_ENV }}
+          # composer dump-env ${{ env.APP_ENV }}
 
       - name: 'Artifact: .env.local'
         uses: actions/upload-artifact@v2
