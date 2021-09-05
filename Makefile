@@ -67,7 +67,24 @@ env-vars: ## asd
 echo-build-tag: ## echo-build-tag
 	@echo $(DATE)
 
-static-analysis: ## static-analysis
+
+lint-php: ## Lint files with php-cs-fixer
+	php-cs-fixer fix --allow-risky=yes --dry-run
+
+lint-js:
+	echo 'ok'
+
+fix-php: ## Fix files with php-cs-fixer
+	php-cs-fixer fix --allow-risky=yes
+
+## —— Coding standards ✨ ————————————————————————————————————————————————
+
+php-cs: ## Coding standards checks (php_codesniffer + php-cs-fixer)
+	echo 'ok'
+
+## —— Static analysis ✨ —————————————————————————————————————————————————
+
+static-analysis: ## Static analysis of PHP code (PHPStan)
 	@php -dxdebug.mode=develop,trace ./vendor/bin/phpstan \
 		--ansi \
 		--verbose \
@@ -75,11 +92,13 @@ static-analysis: ## static-analysis
 		--xdebug \
 		analyse
 
-phpunit: ## unit-tests
+phpunit: ## Run functionnal and unit tests
 	@php -dxdebug.mode=coverage ./vendor/bin/phpunit \
 		--testdox \
 		--colors=always \
-		--verbose
+		--verbose \
+		--stop-on-failure \
+		--testsuite=main
 
 psalm: ## psalm
 	@export PSALM_ALLOW_XDEBUG=1; php -dxdebug.mode=develop,trace ./vendor/bin/psalm \
@@ -169,3 +188,10 @@ clear-cache:
 
 composer-cache-dir:
 	@composer config cache-files-dir
+
+
+
+
+cs: lint-php lint-js ## Run all coding standards checks
+
+static-analysis: phpstan ## Run the static analysis (PHPStan)

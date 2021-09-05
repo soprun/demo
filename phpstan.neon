@@ -2,13 +2,21 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 7
+    level: 4
+    editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+    phpVersion: 70400 # PHP 7.4
     paths:
-        - src
-        - tests
+        - ./src
+        - ./tests
     excludePaths:
         analyse:
-            - src/Migrations/*
-            - src/DataFixtures/*
-    ignoreErrors:
-        - '#Access to an undefined property Symfony\\Component\\Validator\\Constraint::\$message#'
+            - ./src/Kernel.php
+            - ./src/DataFixtures/*
+    symfony:
+        container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
+    scanDirectories:
+        - ./var/cache/dev/Symfony/Config
+    parallel:
+        jobSize: 20
+        maximumNumberOfProcesses: 32
+        minimumNumberOfJobsPerProcess: 2

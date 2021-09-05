@@ -1,4 +1,4 @@
-name: 'Continuous integration'
+name: 'Build'
 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -8,25 +8,40 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  APP_ENV: 'test'
+  PHP_VERSION: 8.0
+  PHP_EXTENSIONS: 'intl'
+  PHP_TOOLS: 'composer:v2, psalm, cs2pr'
+
 jobs:
   build:
-    name: 'Build php-8.0'
+    name: 'Build'
     runs-on: ubuntu-latest
-    #    strategy:
-    #      matrix:
-    #        php-version: [ '8.0' ]
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: '0'
+
+      - name: 'Get the version'
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: 'Setup PHP'
         id: setup-php
         uses: shivammathur/setup-php@2.7.0
         with:
-          php-version: ${{ matrix.php-version }}
           coverage: xdebug
-          extensions: intl
-          tools: composer:v2, psalm, cs2pr
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          tools: ${{ env.PHP_TOOLS }}
+        env:
+          update: true
+
+      - name: 'Check PHP Version'
+        run: php -v
 
       - name: 'Print PHP version'
         run: echo ${{ steps.setup-php.outputs.php-version }}
@@ -42,21 +57,33 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
 
-      - name: 'Validate composer.json and composer.lock'
-        run: composer validate --strict
+      - name: 'Install Symfony CLI'
+        run: |
+          echo "::group::installer symfony cli"
+          wget https://get.symfony.com/cli/installer -O - | bash
+          echo "::endgroup::"
+          echo "::group::Check if any dependencies are compromised"
+          /home/runner/.symfony/bin/symfony check:security
+          echo "::endgroup::"
 
-      - name: 'Download Symfony CLI'
-        run: wget https://get.symfony.com/cli/installer -O - | bash
-
-      - name: 'Check if any dependencies are compromised'
-        run: /home/runner/.symfony/bin/symfony check:security
-
-      - name: 'Install dependencies'
+      - name: 'Install Composer dependencies'
         id: install
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: |
+          echo "::group::composer validate"
+          composer validate --strict
+          echo "::endgroup::"
+          echo "::group::composer install"
+          composer install --prefer-dist --no-interaction --no-progress
+          echo "::endgroup::"
+          echo "::group::composer dump environment variables"
+          composer dump-env ${{ env.APP_ENV }}
+          echo "::endgroup::"
 
-      - name: 'Compiles .env files to .env.local.php.'
-        run: composer symfony:dump-env prod
+      - name: 'Create Database'
+        continue-on-error: true
+        run: |
+          mkdir -p ./data
+          touch ./data/database_test.sqlite
 
       - name: 'Uploading an archive production artifacts'
         uses: actions/upload-artifact@v2
@@ -94,7 +121,7 @@ jobs:
 
       - name: 'Run PHPStan static analysis tool'
         continue-on-error: true
-        run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
+        run: php ./vendor/bin/phpstan analyse ./src --memory-limit=-1 --threads=4 --error-format=checkstyle | cs2pr
 
       #      - name: 'Run Psalm'
       #        continue-on-error: true
