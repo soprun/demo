@@ -16,4 +16,4 @@ COPY ./docker/php-fpm/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 COPY . .
 
-
+# https://github.com/phpdocker-io/phpdocker.io/blob/master/infrastructure/nginx/nginx.conf

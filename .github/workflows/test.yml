@@ -1,14 +1,20 @@
-name: 'test'
+name: 'Test'
 
 on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
+  workflow_run:
+    workflows: [ "Build" ]
+    branches: [ main, develop ]
+    types: [ completed ]
 
 jobs:
   test:
-    name: 'Test'
+    name: 'Testing'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
@@ -16,7 +22,7 @@ jobs:
 
       - name: 'Run PHPStan static analysis tool'
         continue-on-error: true
-        run: php ./vendor/bin/phpstan analyse ./src --memory-limit=-1 --error-format=checkstyle | cs2pr
+        run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
 
       #      - name: 'Run Psalm'
       #        continue-on-error: true
