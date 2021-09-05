@@ -27,6 +27,7 @@ jobs:
         id: version
         shell: bash
         run: |
+          set +e
           tag="$(git describe --tags "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
           tag="${tag/v/}"
           if [ -z "${tag}" ]; then
