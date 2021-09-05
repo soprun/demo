@@ -23,7 +23,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           coverage: xdebug
           extensions: intl
-          tools: composer:v2, psalm
+          tools: composer:v2, psalm, cs2pr
 
       - name: 'Print PHP version'
         run: echo ${{ steps.setup-php.outputs.php-version }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: 'Execute unit tests'
         continue-on-error: true
-        run: ./vendor/bin/phpunit --testdox --colors=always --teamcity test
+        run: ./vendor/bin/phpunit --testdox --colors=always
 
       - name: 'Execute mutation tests'
         continue-on-error: true
