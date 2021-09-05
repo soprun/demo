@@ -37,6 +37,7 @@ jobs:
         run: composer validate --strict
 
       - name: 'Install dependencies'
+        id: install
         run: composer install --prefer-dist --no-interaction
 
       - name: 'Lint YAML files'
