@@ -44,9 +44,6 @@ jobs:
           extensions: ${{ env.PHP_EXTENSIONS }}
           tools: ${{ env.PHP_TOOLS }}
 
-      - name: 'Check PHP Version'
-        run: php -v
-
       - name: 'Install Symfony CLI'
         run: |
           echo "::group::installer symfony cli"
@@ -79,21 +76,6 @@ jobs:
           echo "::group::composer dump environment variables"
           composer dump-env ${{ env.APP_ENV }}
           echo "::endgroup::"
-
-      - name: 'Create Database'
-        continue-on-error: true
-        run: |
-          mkdir -p ./data
-          touch ./data/database_test.sqlite
-
-      - name: 'Uploading an archive production artifacts'
-        uses: actions/upload-artifact@v2
-        with:
-          retention-days: 2
-          name: build-dist
-          path: |
-            public/reports/**
-            .env.local.php
 
       - name: 'Lint YAML files'
         continue-on-error: true
@@ -135,3 +117,12 @@ jobs:
       - name: 'Run mutation testing '
         continue-on-error: true
         run: php ./vendor/bin/infection --coverage=public/reports/infection
+
+      - name: 'Uploading an archive production artifacts'
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 2
+          name: build-dist
+          path: |
+            ./public/reports/*
+            .env.local.php
