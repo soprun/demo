@@ -14,8 +14,13 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+#      - name: 'Setup PHP'
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: ${{ matrix.php }}
+#          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached
+#          tools: composer:v2
+#          coverage: none
 
       - name: 'Set composer cache directory'
         id: composer-cache
@@ -28,11 +33,14 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: 'Validate composer.json and composer.lock'
+        run: composer validate --strict
+
       - name: 'Install dependencies'
-        run: composer install --prefer-dist --no-progress --no-interaction
+        run: composer install --prefer-dist --no-interaction
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
+      - name: 'Execute static analysis'
+        run: php ./vendor/bin/phpstan analyse
 
-    # - name: Run test suite
-    #   run: composer run-script test
+      - name: 'Execute unit tests'
+        run: php -dxdebug.mode=coverage ./vendor/bin/phpunit --testdox --colors=always
