@@ -23,8 +23,7 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
-      - name: 'Get build version'
-        id: version
+      - name: 'Get build release'
         shell: bash
         run: |
           set +e
@@ -34,18 +33,16 @@ jobs:
             tag="0.0.0"
           fi
           release="${tag}-$(git rev-parse --short HEAD)"
-          set -e
-
           echo "APP_RELEASE=${release}" >> $GITHUB_ENV
-          echo "::warning::APP_ENV=${release}"
+          echo "::debug::release=${release}"
 
-      - name: '.env.local'
+      - name: 'Get application environment'
         shell: bash
         run: |
-          echo "::debug::APP_ENV=${APP_ENV}"
-          echo "::debug::APP_RELEASE=${APP_RELEASE}"
+          # Application environment
+          echo "::warning::APP_ENV=${APP_ENV}"
+          echo "::warning::APP_RELEASE=${release}"
 
-          # set application environment
           echo "APP_ENV=${APP_ENV}" >> .env.local
           echo "APP_RELEASE=${APP_RELEASE}" >> .env.local
 
@@ -87,14 +84,14 @@ jobs:
           echo "::group::composer install"
           composer install --prefer-dist --no-interaction --optimize-autoloader --quiet
           echo "::endgroup::"
-          echo "::group::composer dump environment variables"
-          composer dump-env ${{ env.APP_ENV }}
-          echo "::endgroup::"
+      #          echo "::group::composer dump environment variables"
+      #          composer dump-env ${{ env.APP_ENV }}
+      #          echo "::endgroup::"
 
-      - name: 'Artifact: .env '
+      - name: 'Artifact: .env.local'
         uses: actions/upload-artifact@v2
         with:
           retention-days: 2
-          name: build-dev
+          name: build-env
           path: |
             ./.env.local.php
