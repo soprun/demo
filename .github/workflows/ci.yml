@@ -17,18 +17,22 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 'Setup PHP'
+        id: setup-php
         uses: shivammathur/setup-php@2.7.0
         with:
           php-version: ${{ matrix.php-version }}
-          coverage: 'none'
+          coverage: xdebug
           extensions: intl
-          tools: composer:v2
+          tools: composer:v2, psalm
 
-      - name: 'Set composer cache directory'
+      - name: 'Print PHP version'
+        run: echo ${{ steps.setup-php.outputs.php-version }
+
+      - name: 'Get composer cache directory'
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-      - name: 'Cache Composer packages'
+      - name: 'Cache dependencies'
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
@@ -70,20 +74,25 @@ jobs:
         if: always() && steps.install.outcome == 'success'
         run: /home/runner/.symfony/bin/symfony check:security
 
-      - name: 'Execute static analysis'
+      - name: 'Run PHPStan'
         if: always() && steps.install.outcome == 'success'
         continue-on-error: true
-        run: php ./vendor/bin/phpstan analyse
+        run: php ./vendor/bin/phpstan analyse ./src --error-format=checkstyle | cs2pr
+
+      - name: 'Run Psalm'
+        if: always() && steps.install.outcome == 'success'
+        continue-on-error: true
+        run: psalm --output-format=github
 
       - name: 'Execute unit tests'
         if: always() && steps.install.outcome == 'success'
         continue-on-error: true
-        run: php -dxdebug.mode=coverage ./vendor/bin/phpunit --testdox --colors=always
+        run: ./vendor/bin/phpunit --testdox --colors=always --teamcity test
 
       - name: 'Execute mutation tests'
         if: always() && steps.install.outcome == 'success'
         continue-on-error: true
-        run: php ./vendor/bin/infection --coverage=public/reports/infection
+        run: ./vendor/bin/infection --coverage=public/reports/infection
 
 #      - name: 'Uploading an archive production artifacts'
 #        uses: actions/upload-artifact@v2
