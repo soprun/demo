@@ -32,7 +32,6 @@ jobs:
           if [ -z "${tag}" ]; then
             tag="0.0.0"
           fi
-          set -e
           release="${tag}-$(git rev-parse --short HEAD)"
           echo "APP_RELEASE=${release}" >> $GITHUB_ENV
           echo "::debug::release=${release}"
@@ -42,7 +41,7 @@ jobs:
         run: |
           # Application environment
           echo "::warning::APP_ENV=${APP_ENV}"
-          echo "::warning::APP_RELEASE=${release}"
+          echo "::warning::APP_RELEASE=${APP_RELEASE}"
 
           echo "APP_ENV=${APP_ENV}" >> .env.local
           echo "APP_RELEASE=${APP_RELEASE}" >> .env.local
