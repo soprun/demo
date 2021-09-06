@@ -157,7 +157,6 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 'Yarn install dependencies'
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
       - name: 'Yarn build'
