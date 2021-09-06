@@ -18,14 +18,13 @@ env:
 jobs:
   build:
     name: 'Building'
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
 
       - name: 'Get release version'
-        id: release
+        id: version
         shell: bash
         run: |
           set +e
@@ -90,10 +89,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           retention-days: 2
-          name: build-env
+          name: build-backend
           path: |
             ./.env.local
             ./.env.local.php
+            ./vednor
 
   test:
     name: 'Testing'
@@ -167,6 +167,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           retention-days: 2
-          name: build
+          name: build-frontend
           path: public/build
 
