@@ -10,7 +10,7 @@ on:
 
 env:
   APP_ENV: 'ci'
-  APP_RELEASE: ''
+  APP_RELEASE: 'unknown'
   PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
@@ -83,7 +83,6 @@ jobs:
         run: |
           composer validate --strict
           composer install --prefer-dist --no-interaction --optimize-autoloader --quiet
-          # composer dump-env ${{ env.APP_ENV }}
 
       - name: 'Artifact: .env.local'
         uses: actions/upload-artifact@v2
