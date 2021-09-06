@@ -16,8 +16,9 @@ env:
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
 
 jobs:
-  prepare:
-    name: 'Preparing'
+  build:
+    name: 'Building'
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
@@ -38,19 +39,8 @@ jobs:
           echo "::set-output name=release::${release}"
           echo "::debug::release=${release}"
 
-  build:
-    name: 'Building'
-    needs: prepare
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout code'
-        uses: actions/checkout@v2
-
       - name: 'Setup application environment'
         shell: bash
-        env:
-          APP_ENV: lol
-          APP_RELEASE: ${{ steps.release.outputs.release }}
         run: |
           # Application environment
           echo "::warning::APP_ENV=${APP_ENV}"
@@ -137,7 +127,7 @@ jobs:
 
   build-assets:
     name: 'Building assets'
-    needs: prepare
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
