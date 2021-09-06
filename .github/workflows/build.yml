@@ -143,51 +143,35 @@ jobs:
         env:
           NODE_ENV: development
         with:
-          node-version: '14'
+          node-version: 14
           check-latest: true
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache: yarn
+          cache-dependency-path: '**/yarn.lock'
 
-      - name: 'Get config cache directory'
-        id: npm-cache-dir
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
+      - name: 'Get yarn cache directory path'
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - name: 'Setup npm cache node_modules'
-        uses: actions/cache@v2
-        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+      - name: 'Cache dependencies'
+        uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-yarn-
 
-      - name: 'Install dependencies'
-        run: npm ci --ignore-scripts
+      - name: 'Yarn install dependencies'
+        if: steps.yarn-cache.outputs.cache-hit != 'true' # Over here!
+        run: yarn install
 
-      - name: 'Run lint'
-        continue-on-error: true
-        run: npm run lint
+      - name: 'Yarn build production'
+        run: yarn run encore production --progress
 
-      - name: 'Run test'
-        continue-on-error: true
-        run: npm run test
-
-      - name: 'Run audit'
-        continue-on-error: true
-        run: npm audit --production
-
-      - name: 'Run npm-check'
-        continue-on-error: true
-        run: npm run npm-check
-
-      - name: 'Run build in production mode'
-        run: npm run build --if-present
-
-      - name: 'Uploading an archive production artifacts'
+      - name: 'Archive production artifacts'
         uses: actions/upload-artifact@v2
         with:
           retention-days: 2
-          name: build-dist
-          path: |
-            public/build
+          name: build
+          path: public/build
+
