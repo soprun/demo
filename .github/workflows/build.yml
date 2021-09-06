@@ -157,11 +157,11 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 'Yarn install dependencies'
-        if: steps.yarn-cache.outputs.cache-hit != 'true' # Over here!
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: 'Yarn build production'
-        run: yarn run encore production --progress
+      - name: 'Yarn build'
+        run: yarn run build
 
       - name: 'Archive production artifacts'
         uses: actions/upload-artifact@v2
