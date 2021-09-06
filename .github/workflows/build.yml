@@ -1,4 +1,4 @@
-name: 'PHP CI'
+name: 'Continuous integration'
 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -9,8 +9,8 @@ on:
     branches: [ main ]
 
 env:
-  APP_ENV: 'test'
-  APP_RELEASE: 'unknown'
+  APP_ENV: 'ci'
+  APP_RELEASE: ''
   PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 'Get release version'
+        id: release
         shell: bash
         run: |
           set +e
@@ -46,6 +47,9 @@ jobs:
 
       - name: 'Setup application environment'
         shell: bash
+        env:
+          APP_ENV: lol
+          APP_RELEASE: ${{ env.APP_RELEASE }}
         run: |
           # Application environment
           echo "::warning::APP_ENV=${APP_ENV}"
