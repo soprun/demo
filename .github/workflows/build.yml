@@ -10,7 +10,7 @@ on:
 
 env:
   APP_ENV: 'ci'
-  APP_RELEASE: ''
+  APP_RELEASE: ${{ steps.release.outputs.release }}
   PHP_VERSION: 8.1
   PHP_EXTENSIONS: 'intl'
   PHP_TOOLS: 'composer:v2, psalm, cs2pr'
@@ -35,6 +35,7 @@ jobs:
           fi
           release="${tag}-$(git rev-parse --short HEAD)"
           echo "APP_RELEASE=${release}" >> $GITHUB_ENV
+          echo "::set-output name=release::${release}"
           echo "::debug::release=${release}"
 
   build:
