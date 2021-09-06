@@ -129,6 +129,8 @@ jobs:
     name: 'Building assets'
     needs: build
     runs-on: ubuntu-latest
+    env:
+      APP_RELEASE: ${{ steps.version.outputs.release }}
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v2
